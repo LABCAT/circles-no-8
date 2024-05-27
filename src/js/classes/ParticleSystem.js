@@ -8,10 +8,14 @@ export default class ParticleSystem {
         this.count = 0;
     }
 
+    setColour(colour) {
+        this.colour = colour;
+    }
+
     addParticle(loc) {
         this.count++;
         const SPAWN_COUNT = 5; // Assuming SPAWN_COUNT and MAX_PARTICLES are global constants
-        const MAX_PARTICLES = 100;
+        const MAX_PARTICLES = 50;
 
         if (this.particles.length + SPAWN_COUNT < MAX_PARTICLES) {
             for (let i = 0; i < SPAWN_COUNT; i++) {

@@ -2,11 +2,11 @@ export default class Particle {
     constructor(p, colour, loc2) {
         this.p = p;
         this.colour = colour;
-        this.START_SIZE = 50;
-        this.PARTICLE_START_FORCE = 100;
-        this.PARTILE_MAX_VEL = 20; ///7;//4;
+        this.START_SIZE = this.p.random(p.width / 48, p.width / 32);
+        this.PARTICLE_START_FORCE = 50;
+        this.PARTILE_MAX_VEL = 4; ///7;//4;
         this.PARTICLE_MAX_ACC = 10; // Max particle acceleration
-        this.SHRINK_RATE = 1;//2;//5;
+        this.SHRINK_RATE = 5;//2;//5;
         this.loc = this.p.createVector(loc2.x, loc2.y);
         this.vel = this.p.createVector(0, 0);
         this.acc = this.p.createVector(0, 0);
@@ -41,9 +41,14 @@ export default class Particle {
     }
   
     display() {
-        this.colour.update();
-        this.p.fill(this.colour.R, this.colour.G, this.colour.B);
+        // this.colour.update();
+        this.p.stroke(255, 255, 255);
+        this.p.fill(this.colour.R, this.colour.G, this.colour.B, 127);
         this.p.ellipse(this.loc.x, this.loc.y, this.size, this.size);
+        this.colour.update();
+        this.colour.update();
+        this.p.fill(this.colour.R, this.colour.G, this.colour.B, 193);
+        this.p.ellipse(this.loc.x, this.loc.y, this.size / 2, this.size / 2);
     }
   
     isDead() {

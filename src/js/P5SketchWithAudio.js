@@ -71,7 +71,7 @@ const P5SketchWithAudio = () => {
 
         p.setup = () => {
             p.canvas = p.createCanvas(p.canvasWidth, p.canvasHeight);
-            p.colorMode(p.HSB);
+            // p.colorMode(p.HSB);
             p.background(0, 0, 0);
             p.colour = new ColourGenerator(p)
             p.system = new ParticleSystem(p, p.colour);
@@ -83,9 +83,18 @@ const P5SketchWithAudio = () => {
             }
         }
 
-        p.executeCueSet1 = ({currentCue}) => {
-            const x = p.random(0, p.width);
+        p.executeCueSet1 = (note) => {
+            const { currentCue, ticks } = note;
+            console.log(ticks % 122880);
+            // const x = p.random(0, p.width);
+            const x = p.map(ticks % 122880, 0, 122880, p.width / 32 + p.width / 32, p.width - p.width / 32)
             const y = p.random(0, p.height);
+            if(currentCue % 16 === 0) {
+                p.background(0, 0, 0);
+                p.system = new ParticleSystem(p, p.colour);
+            }
+            p.colour = new ColourGenerator(p)
+            p.system.setColour(p.colour);
             p.system.addParticle(p.createVector(x, y));
         }
 
