@@ -1,8 +1,7 @@
 export default class Particle {
-    constructor(p, colour, loc2) {
+    constructor(p, colour, loc2, minSize, maxSize) {
         this.p = p;
         this.colour = colour;
-        this.START_SIZE = this.p.random(p.width / 48, p.width / 32);
         this.PARTICLE_START_FORCE = 50;
         this.PARTILE_MAX_VEL = 4; ///7;//4;
         this.PARTICLE_MAX_ACC = 10; // Max particle acceleration
@@ -10,7 +9,7 @@ export default class Particle {
         this.loc = this.p.createVector(loc2.x, loc2.y);
         this.vel = this.p.createVector(0, 0);
         this.acc = this.p.createVector(0, 0);
-        this.size = this.START_SIZE;
+        this.size = this.p.random(minSize, maxSize);
         this.angle = 0;
     }
   
@@ -43,12 +42,15 @@ export default class Particle {
     display() {
         // this.colour.update();
         this.p.stroke(255, 255, 255);
-        this.p.fill(this.colour.R, this.colour.G, this.colour.B, 127);
+        this.p.fill(this.colour.R, this.colour.G, this.colour.B, 63);
         this.p.ellipse(this.loc.x, this.loc.y, this.size, this.size);
         this.colour.update();
         this.colour.update();
-        this.p.fill(this.colour.R, this.colour.G, this.colour.B, 193);
+        this.p.fill(this.colour.R, this.colour.G, this.colour.B, 127);
         this.p.ellipse(this.loc.x, this.loc.y, this.size / 2, this.size / 2);
+        this.colour.update();
+        this.p.fill(this.colour.R, this.colour.G, this.colour.B, 193);
+        this.p.ellipse(this.loc.x, this.loc.y, this.size / 5, this.size / 4);
     }
   
     isDead() {

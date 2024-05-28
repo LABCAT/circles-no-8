@@ -37,6 +37,10 @@ const P5SketchWithAudio = () => {
                     console.log(result);
                     const noteSet1 = result.tracks[2].notes; // Sampler 1 - alone5 (Digital Love)
                     p.scheduleCueSet(noteSet1, 'executeCueSet1');
+                    const noteSet2 = result.tracks[4].notes; // Synth 1 - Bluetag
+                    p.scheduleCueSet(noteSet2, 'executeCueSet2');
+                    const noteSet3 = result.tracks[11].notes; // Combinator 2 - Celtic Dream (Mod Wheel)
+                    p.scheduleCueSet(noteSet3, 'executeCueSet3');
                     p.audioLoaded = true;
                     document.getElementById("loader").classList.add("loading--complete");
                     document.getElementById("play-icon").classList.remove("fade-out");
@@ -69,12 +73,19 @@ const P5SketchWithAudio = () => {
         
         p.system = null;
 
+        p.bgColourSet = [];
+
+        p.currentBG = null;
+
         p.setup = () => {
             p.canvas = p.createCanvas(p.canvasWidth, p.canvasHeight);
             // p.colorMode(p.HSB);
             p.background(0, 0, 0);
             p.colour = new ColourGenerator(p)
             p.system = new ParticleSystem(p, p.colour);
+            p.randomColor = require('randomcolor');
+            p.bgColourSet = p.randomColor({luminosity: 'dark', count: 12});
+            p.currentBG = p.random(p.bgColourSet);
         }
 
         p.draw = () => {
@@ -83,19 +94,67 @@ const P5SketchWithAudio = () => {
             }
         }
 
+        p.direction = 'left';
+
+        p.x = 0;
+
+        p.y = 0;
+
+        p.moduloMap = 0;
+
+        p.setNextLocation = () => {
+            switch (p.direction) {
+                case 'right':
+                    p.x = p.map(p.moduloMap % 122880, 0, 122880, p.width - p.width / 32, 0 + p.width / 32)
+                    p.y = p.random(0, p.height);
+                    break;
+                case 'down':
+                    p.x = p.random(0, p.width);
+                    p.y = p.map(p.moduloMap % 122880, 0, 122880, 0 + p.height / 32, p.height - p.height / 32)
+                    break;
+                case 'up':
+                    p.x = p.random(0, p.width);
+                    p.y = p.map(p.moduloMap % 122880, 0, 122880, p.width - p.height / 32, 0 + p.height / 32)
+                    break;
+                default:
+                    p.x = p.map(p.moduloMap % 122880, 0, 122880, 0 + p.width / 32, p.width - p.width / 32)
+                    p.y = p.random(0, p.height);
+                    break;
+            }
+        }
+
         p.executeCueSet1 = (note) => {
             const { currentCue, ticks } = note;
-            console.log(ticks % 122880);
-            // const x = p.random(0, p.width);
-            const x = p.map(ticks % 122880, 0, 122880, p.width / 32 + p.width / 32, p.width - p.width / 32)
-            const y = p.random(0, p.height);
+            p.moduloMap = ticks % 122880;
             if(currentCue % 16 === 0) {
-                p.background(0, 0, 0);
+                if(currentCue < 80) {
+                    p.background(0, 0, 0, 239);
+                }
                 p.system = new ParticleSystem(p, p.colour);
+                p.direction = p.random(
+                    ['left', 'right', 'down', 'up'].filter(d => d !== p.direction)
+                );
             }
-            p.colour = new ColourGenerator(p)
+            
+            p.setNextLocation();
             p.system.setColour(p.colour);
-            p.system.addParticle(p.createVector(x, y));
+            p.system.addParticle(p.createVector(p.x, p.y));
+        }
+
+        p.executeCueSet2 = (note) => {
+            const { currentCue } = note;
+            if(currentCue % 2 === 0 && currentCue < 48) {
+                p.currentBG = p.bgColourSet.filter(colour => colour !== p.currentBG);
+                p.background(p.currentBG);
+                p.system.updateParticleMinMaxSize();
+            }
+            p.setNextLocation();
+            p.system.addParticle(p.createVector(p.x, p.y));
+        }
+
+        p.executeCueSet3 = (note) => {
+            p.setNextLocation();
+            p.system.addParticle(p.createVector(p.x, p.y));
         }
 
         p.hasStarted = false;
